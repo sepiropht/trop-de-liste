@@ -33,8 +33,17 @@ impl List {
                 self.head = node.next;
                 Some(node.elem)
             }
-        } 
+        }
     }
+}
+
+impl Drop for List {
+        fn drop(&mut self) {
+           let mut cur_link = mem::replace(&mut self.head, Link::Empty);
+            while let Link::More(mut boxed_node) = cur_link {
+                cur_link = mem::replace(&mut boxed_node.next, Link::Empty);
+            }
+        }
 }
 
 #[cfg(test)]
@@ -49,7 +58,6 @@ mod test {
         list.push(1);
         list.push(2);
         list.push(3);
-        
         assert_eq!(list.pop(), Some(3));
         assert_eq!(list.pop(), Some(2));
 
